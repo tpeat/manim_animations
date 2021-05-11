@@ -131,6 +131,9 @@ class ZoomedOnPixel(ZoomedScene):
         self.wait()
         
 
+# I think it would also be good to show how well known manipulations like Grayscale or Inversion/Negateive
+#affect color channels 
+
 class ColorChannels(Scene):
     def construct(self):
         channel_title = Text("Color Channels").shift(UP*2)
@@ -165,18 +168,65 @@ class ColorChannels(Scene):
         self.play(FadeOut(t1),FadeOut(t2),FadeOut(t3),ReplacementTransform(display,pink))
         self.wait()  
 
+#Show the X and Y coordinates on a picture
 class Locations(Scene):
-    def construct(self):
+    def construct(self): 
+        picture = ImageMobject(Image.open(requests.get("https://i.natgeofe.com/n/8c395689-5233-434c-8a1e-bd34af03b59f/84731.jpg?w=1024&h=767", stream=True).raw)).scale(.75) 
         title = Text("Locations on pictures")
+        
+        rect = Rectangle(height=picture.get_height(), width=picture.get_width(), color=BLUE)
 
+        self.add(picture)
+        self.add(title.next_to(picture, UP))
+        self.wait(3)
 
+        #Creating the rectangle, fading out picture, and moving title
+        self.play(Create(rect))
+        self.play(FadeOut(picture))
+        self.play(title.animate.shift(DOWN*5.5 + LEFT*3))
+
+        #Creating braces that show width and height
+        b1 = BraceBetweenPoints(rect.get_corner(LEFT+ UP), rect.get_corner(RIGHT+ UP), direction=[0,1,0])
+        b1text = b1.get_text("Width of Picture").scale(.5)
+        b2 = BraceBetweenPoints(rect.get_corner(DOWN+LEFT), rect.get_corner(UP + LEFT), direction=[-1,0,0])
+        b2text = b2.get_text("Height of Picture").scale(.5)
+    
+        self.play(Create(b1),Write(b1text), Create(b2), Write(b2text))
+        self.wait()
+
+        #Fade out height and width braces
+        self.play(FadeOut(b1),FadeOut( b1text),FadeOut( b2),FadeOut( b2text))
+        dot = Dot(color=RED).move_to(rect.get_corner(UP + LEFT))
+        dot2 = dot.copy().move_to(rect.get_center())
+        dot3 = dot.copy().move_to(rect.get_corner(DOWN + RIGHT))
+        self.play(Create(dot))
+        dot_label = Text("(0, 0)",size=.75).move_to(rect.get_corner(UP + LEFT)*1.2)
+        self.play(Write(dot_label))
+        self.wait(2) 
+
+        #Next for dot2 
+        self.play(Create(dot2))
+        dot2_label = Text("(w/2, h/2)",size=.75).move_to(rect.get_center()+UP)
+        self.play(Write(dot2_label))
+        
+        #Dot 3
+        self.play(Create(dot3))
+        dot3_label = Text("(w, h)",size=.75).move_to(rect.get_corner(DOWN + RIGHT)*1.2)
+        self.play(Write(dot3_label))
+        self.wait()
+
+#Indexing at locations
+
+class ManipulateLocations(Scene):
+    def class 
 
 
 #Unzipping of images using for loops
 
 #Do I want to any manipulations:
 
-
+# I think that doing a mirror could be pretty easy / cool
+#Show just like picture locations and then use the Tau function to rotate it over its y axis for example
 
 
 

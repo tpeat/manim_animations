@@ -39,3 +39,13 @@ creating modular classes helps with production time
 * Put all animations in the construct(self): function
 * Group and VGroup object are useful in grouping submbjects together: you can then transform and change atrributes of the Group that will apply to all submojects 
 * the .next_to(objectName, direction) is helpful for aligning unrelated objects* the .next_to(objectName, direction) is helpful for aligning unrelated objects* the .next_to(objectName, direction) is helpful for aligning unrelated objects* the .next_to(objectName, direction) is helpful for aligning unrelated objects* the .next_to(objectName, direction) is helpful for aligning unrelated objects* the .next_to(objectName, direction) is helpful for aligning unrelated objects* the .next_to(objectName, direction) is helpful for aligning unrelated objects* the .next_to(objectName, direction) is helpful for aligning unrelated objects* the .next_to(objectName, direction) is helpful for aligning unrelated objects
+
+
+## To Do:
+
+* Add class on getPixels method that generates a list of all pixels in a picture
+* Show how manipulations like grayscale or negative manipulate color channels
+* Illustrate manipulations at a specific location => nested for loops
+* Show a mirror using rotate TAU function
+
+
