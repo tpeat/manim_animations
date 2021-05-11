@@ -1,21 +1,23 @@
-#Manim Animations
+# Manim Animations
 
 ```
 Goal: desigin clean animations that will help illustrate CS topics in the context of picture manipulations
 Using Manim: mathematical animation engine
 
 ```
-##Installation
+## Installation
 
 ```
+
 Install Dependencies: 
+1) FFmpeg
+2) LaTex (or minimal version)
+3) Manim (this repo uses community edition)
+
 ```
-* FFmpeg
-* LaTex (or minimal version)
-* Manim (this repo uses community edition)
 
 
-##Usage
+## Usage
 
 ```
 >>> manim -p scene.py [className]
@@ -23,7 +25,7 @@ Install Dependencies:
 className should be whatever animation you would like to see
 
 ```
-##Structure
+## Structure
 
 ```
 Once you run the command listed above, movies will be generated in the Media folder
@@ -32,7 +34,7 @@ creating modular classes helps with production time
 
 ```
 
-##Key methods
+## Key methods
 
 * Put all animations in the construct(self): function
 * Group and VGroup object are useful in grouping submbjects together: you can then transform and change atrributes of the Group that will apply to all submojects 
