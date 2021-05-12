@@ -153,19 +153,76 @@ class ColorChannels(Scene):
         self.play(FadeToColor(c2,RED), FadeToColor(c1,GREEN), FadeToColor(c3,BLUE))
         num_values = Text("Color channel values are ints ranging from 0-255").scale(.6)
         self.play(FadeIn(num_values.next_to(c1,DOWN)))
-        self.wait()
+        self.wait(3)
 
         t1 = Text("71")
         t2 = Text("209")
         t3 = Text("189")
         self.play(
-                Write(t1.move_to(c1.center())),
+                Write(t1.move_to(c1.get_center())),
                 Write(t2.move_to(c2.get_center())),
                 Write(t3.move_to(c3.get_center()))
         ) 
         pink = Circle(color=PINK, fill_opacity=1)
 
-        self.play(FadeOut(t1),FadeOut(t2),FadeOut(t3),ReplacementTransform(display,pink))
+        self.play(FadeOut(t1),FadeOut(t2),FadeOut(t3),FadeOut(num_values),ReplacementTransform(display,pink))
+        self.wait(3)
+        self.play(FadeOut(pink),FadeOut(pix_label),FadeOut(channel_title))
+        self.wait(3)
+        
+
+        grayscale = Text("Grayscaling").shift(UP*2)
+
+        self.play(Write(grayscale))
+
+        g1 = Circle(color=RED,fill_opacity=1)
+        g2 = Circle(color=GREEN, fill_opacity=1)
+        g3 = Circle(color=BLUE, fill_opacity=1)
+
+        gray_container = VGroup(g1,g2,g3).arrange()
+        inv_container = gray_container.copy()
+
+        self.play(Create(gray_container))
+
+        gt1 = Text("100")
+        gt2 = Text("100")
+        gt3 = Text("100")
+        self.play(
+                Write(gt1.move_to(g1.get_center())),
+                Write(gt2.move_to(g2.get_center())),
+                Write(gt3.move_to(g3.get_center()))
+        ) 
+
+        self.play(FadeOut(gt1),FadeOut(gt2),FadeOut(gt3),ReplacementTransform(gray_container, Circle(color=GRAY, fill_opacity=1)))
+
+         
+        avg_text = Text("We often grayscale using the average of the RGB color channels").scale(.75).shift(DOWN*2)
+        self.play(Write(avg_text))
+
+        self.clear()
+
+        #Inversion / Negative
+        inv_title = Text("Negative / Inversion").shift(UP*2)
+        self.play(Write(inv_title))
+        
+        self.play(Create(inv_container))
+
+        n = 256
+        imageArray = np.uint8(
+            [[i * 256 / n for i in range(0, n)] for _ in range(0, 15)]
+        )
+        image = ImageMobject(imageArray).scale(3)
+
+        self.add(image)
+
+        
+
+
+
+        
+        
+
+        
         self.wait()  
 
 #Show the X and Y coordinates on a picture
@@ -218,7 +275,21 @@ class Locations(Scene):
 #Indexing at locations
 
 class ManipulateLocations(Scene):
-    def class 
+    def construct(self):
+        picture = ImageMobject(Image.open(requests.get("https://i.natgeofe.com/n/8c395689-5233-434c-8a1e-bd34af03b59f/84731.jpg?w=1024&h=767", stream=True).raw)).scale(.75) 
+        title = Text("Manipulations at specific locations")
+        
+        rect = Rectangle(height=picture.get_height(), width=picture.get_width(), color=BLUE)
+
+        self.add(picture)
+        self.add(title.next_to(picture, UP))
+        self.wait(3)
+
+        #Creating the rectangle, fading out picture, and moving title
+        self.play(Create(rect))
+        self.play(FadeOut(picture))
+        self.play(title.animate.shift(DOWN*5.5 + LEFT*3))
+
 
 
 #Unzipping of images using for loops
@@ -229,7 +300,95 @@ class ManipulateLocations(Scene):
 #Show just like picture locations and then use the Tau function to rotate it over its y axis for example
 
 
+#We could show a blend function using the plane thing I think
 
 
+class Blend(ThreeDScene):
+    def construct(self):
+        resolution_fa = 22
+        self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
+
+        text3d = Text("Blend Effect").to_corner(UL)
+        self.add_fixed_in_frame_mobjects(text3d) #<----- Add this
+
+        def param_plane(u, v):
+            x = u
+            y = v
+            z = 0
+            return np.array([x, y, z])
+
+        pic = ParametricSurface(
+            param_plane,
+            resolution=(resolution_fa, resolution_fa),
+            v_min=-2,
+            v_max=+2,
+            u_min=-2,
+            u_max=+2,
+        )
+        def second_plane(u, v):
+            x = u
+            y = v
+            z = 2 
+            return np.array([x, y, z])
+
+        pic2 = ParametricSurface(
+            second_plane,
+            resolution=(resolution_fa, resolution_fa),
+            v_min=-2,
+            v_max=+2,
+            u_min=-2,
+            u_max=+2,
+            checkerboard_colors=['#E9D700','#F8ED62'], # Update colors of yellow checkerboard
+        )
+        
+        pic2.generate_target()
+        pic2.target.move_to(pic.get_center())
+        #Adding axes
+        axes = ThreeDAxes()
+        
+        self.add(axes)
+
+        self.play(Write(pic))
+
+        self.play(Write(pic2))
+
+        pic3 = pic.copy().set_fill_by_checkerboard(['#4AE54A','#A4FBA6'])
+
+        label2 = Text("Picture 2").next_to(text3d, DOWN).shift(DOWN).scale(.75)
+        label1 = Text("Picture 1").next_to(label2,DOWN).shift(DOWN).scale(.75)
+        
+        self.add_fixed_in_frame_mobjects(label1)
+        self.add_fixed_in_frame_mobjects(label2)
+        self.play(Write(label1), Write(label2))
+
+        self.play(FadeOut(label2),FadeOut(label1))
+        
+        self.play((MoveToTarget(pic2))) 
+
+        label3 = Text("Blended Picture").next_to(text3d,DOWN).shift(DOWN*2).scale(.75)
+        self.add_fixed_in_frame_mobjects(label3) 
+        self.play(Write(label3))
+         
+        self.play(FadeOut(pic2),ReplacementTransform(pic,pic3))
+
+        self.wait()
+
+
+
+
+class Mirror(Scene):
+    def construct(self):
+        rect = Rectangle()
+        self.add(rect)
+
+        self.play(
+            Rotating(
+                rect,
+                radians=PI,
+                run_time=2,
+                axis=RIGHT
+            )
+        )
+        self.wait(2)
 
 
