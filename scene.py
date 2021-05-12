@@ -192,6 +192,7 @@ class ColorChannels(Scene):
                 Write(gt2.move_to(g2.get_center())),
                 Write(gt3.move_to(g3.get_center()))
         ) 
+        self.wait(3)
 
         self.play(FadeOut(gt1),FadeOut(gt2),FadeOut(gt3),ReplacementTransform(gray_container, Circle(color=GRAY, fill_opacity=1)))
 
@@ -209,21 +210,16 @@ class ColorChannels(Scene):
 
         n = 256
         imageArray = np.uint8(
-            [[i * 256 / n for i in range(0, n)] for _ in range(0, 15)]
+            [[i * 256 / n for i in range(0, n)] for _ in range(0, 30)]
         )
-        image = ImageMobject(imageArray).scale(3)
+        image = ImageMobject(imageArray).scale(5).shift(DOWN*2)
 
         self.add(image)
-
-        
-
-
-
-        
-        
-
         
         self.wait()  
+        
+
+
 
 #Show the X and Y coordinates on a picture
 class Locations(Scene):
@@ -254,10 +250,10 @@ class Locations(Scene):
         #Fade out height and width braces
         self.play(FadeOut(b1),FadeOut( b1text),FadeOut( b2),FadeOut( b2text))
         dot = Dot(color=RED).move_to(rect.get_corner(UP + LEFT))
-        dot2 = dot.copy().move_to(rect.get_center())
+        dot2 = dot.copy().move_to(rect.get_center())                    # <------- Example of moving dot to location
         dot3 = dot.copy().move_to(rect.get_corner(DOWN + RIGHT))
         self.play(Create(dot))
-        dot_label = Text("(0, 0)",size=.75).move_to(rect.get_corner(UP + LEFT)*1.2)
+        dot_label = Text("(0, 0)",size=.75).move_to(rect.get_corner(UL)*1.2)
         self.play(Write(dot_label))
         self.wait(2) 
 
@@ -280,16 +276,38 @@ class ManipulateLocations(Scene):
         title = Text("Manipulations at specific locations")
         
         rect = Rectangle(height=picture.get_height(), width=picture.get_width(), color=BLUE)
+        display = VGroup()
+        display.add(rect)   #<---- Adding rect to VGroup to be able to slide them both over
+
 
         self.add(picture)
+        self.wait(3)
+
+        rect2 = Rectangle(height=picture.get_height(), width=picture.get_width()/2,color=YELLOW,fill_opacity=.6)
+        rect2.align_to(rect,LEFT)
+        display.add(rect2)
+        self.play(Create(rect2))
+
         self.add(title.next_to(picture, UP))
         self.wait(3)
 
         #Creating the rectangle, fading out picture, and moving title
         self.play(Create(rect))
         self.play(FadeOut(picture))
-        self.play(title.animate.shift(DOWN*5.5 + LEFT*3))
+        self.play(title.animate.shift(DOWN*5.5 + LEFT*2))
+        
+        self.play(display.animate.shift(LEFT*3)) #<---- Shifts the display of rects left
+        
+        nested_x = Text("for x in range(pic.getWidth()):",size=.5)    #<----- Maybe it would 
+        nested_y = Text("for y in range(pic.getHeight()):",size=.5).next_to(nested_x,DOWN).shift(RIGHT)
+        get_pixel = Text("pix = getPixel(pic,x,y)",size=.5).next_to(nested_y,DOWN).shift(RIGHT*.5)
+        nested = VGroup(nested_x,nested_y,get_pixel).shift(RIGHT*3)
+        self.play(Write(nested))
 
+
+        self.wait()
+
+        #Unfinished! Needs to be done
 
 
 #Unzipping of images using for loops
@@ -374,21 +392,34 @@ class Blend(ThreeDScene):
         self.wait()
 
 
-
-
-class Mirror(Scene):
+#this might have to be a 3d scene to achieve the desired effect
+class Mirror(ThreeDScene):
     def construct(self):
-        rect = Rectangle()
-        self.add(rect)
+        self.set_camera_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
 
-        self.play(
-            Rotating(
-                rect,
-                radians=PI,
-                run_time=2,
-                axis=RIGHT
-            )
-        )
+        #picture = ImageMobject(Image.open(requests.get("https://i.natgeofe.com/n/8c395689-5233-434c-8a1e-bd34af03b59f/84731.jpg?w=1024&h=767", stream=True).raw)).scale(.75)
+        #self.add(picture)
+        #
+        #picture2 = picture.copy()
+
+        def update_curve(d,dt):                 #<---- This doesn't work actually so bit of an issues
+            d.rotate_about_origin(dt,RIGHT)
+
+#        picture2.add_updater(update_curve)
+        axes = ThreeDAxes()
+#        self.add(picture,picture2)
+        self.add(axes)
+        self.wait(PI)
+        self.add(Rectangle())
+
+        #self.play(             #<---- This is closer to the flipping motion but then it warps it
+        #    Rotating(
+        #        picture,
+        #        radians=PI,
+        #        run_time=2,
+        #        axis=[1,0,0]
+        #    )
+        #)
         self.wait(2)
 
 
